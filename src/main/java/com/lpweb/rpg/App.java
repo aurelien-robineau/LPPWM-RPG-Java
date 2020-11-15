@@ -18,6 +18,7 @@ public class App
             Scanner scan = new Scanner(System.in);
             System.out.print("Action (z: haut, s: bas, d: droite, q: gauche): ");
             String action = scan.nextLine();
+            scan.close();
 
             try {
                 map.performAction(action);
