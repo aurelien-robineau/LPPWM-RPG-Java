@@ -29,14 +29,21 @@ public class Map {
 
         // Init map
         this.initMap(size);
-        this.fillMap();
     }
 
     public void render() {
         // Map border top
         System.out.print("|");
         for (int i = 0; i < this.cells.get(0).size(); i++) {
-            System.out.print("--");
+            if (i == this.cells.get(0).size() - 2) {
+                System.out.print("-|");
+            }
+            else if (i == this.cells.get(0).size() - 1) {
+                System.out.print("  ");
+            }
+            else {
+                System.out.print("--");
+            }
         }
         System.out.println("|");
 
@@ -132,12 +139,16 @@ public class Map {
 
             this.cells.add(row);
         }
-    }
 
-    private void fillMap() {
+        // Add dragon to the top right corner
         this.cells
-            .get(this.playerPosition.get("y"))
-            .set(this.playerPosition.get("x"), this.player);
+        .get(0)
+        .set(this.cells.size() - 1, new Dragon());
+
+        // Add player
+        this.cells
+        .get(this.playerPosition.get("y"))
+        .set(this.playerPosition.get("x"), this.player);
     }
 
     public boolean playerWins() {

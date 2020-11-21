@@ -12,7 +12,7 @@ public class App
     {
         Entity player = new Dwarf();
         Menu menu = Menu.getInstance();
-        Map map = new Map(10, player);
+        Map map = new Map(30, player);
         menu.displayWelcome();
         map.render();
         Scanner scan = new Scanner(System.in);
