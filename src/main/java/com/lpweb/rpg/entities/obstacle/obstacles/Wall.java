@@ -10,7 +10,7 @@ public class Wall extends Obstacle {
     }
 
     @Override
-    public char mapRepresentation() {
-        return '⃢';
+    public String mapRepresentation() {
+        return "##";
     }
 }

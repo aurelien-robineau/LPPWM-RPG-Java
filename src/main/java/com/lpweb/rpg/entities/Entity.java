@@ -19,5 +19,5 @@ public abstract class Entity {
         this.lifePoints -= points;
     }
 
-    public abstract char mapRepresentation();
+    public abstract String mapRepresentation();
 }

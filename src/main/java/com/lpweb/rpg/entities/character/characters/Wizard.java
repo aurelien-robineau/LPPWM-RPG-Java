@@ -10,7 +10,7 @@ public class Wizard extends Character {
     }
 
     @Override
-    public char mapRepresentation() {
-        return 'W';
+    public String mapRepresentation() {
+        return "Wz";
     }
 }

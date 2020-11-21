@@ -10,8 +10,8 @@ public class Dwarf extends Character {
     }
 
     @Override
-    public char mapRepresentation() {
-        return 'D';
+    public String mapRepresentation() {
+        return "Dw";
     }
 }
 

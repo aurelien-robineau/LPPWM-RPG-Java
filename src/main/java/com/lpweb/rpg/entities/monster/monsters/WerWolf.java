@@ -2,15 +2,15 @@ package com.lpweb.rpg.entities.monster.monsters;
 
 import com.lpweb.rpg.entities.monster.Monster;
 
-public class Zombie extends Monster {
-    private static final int LIFE_POINTS = 20;
+public class WerWolf extends Monster {
+    private static final int LIFE_POINTS = 50;
 
-    public Zombie() {
+    public WerWolf() {
         super(LIFE_POINTS);
     }
 
     @Override
     public String mapRepresentation() {
-        return "Zb";
+        return "Ww";
     }
 }

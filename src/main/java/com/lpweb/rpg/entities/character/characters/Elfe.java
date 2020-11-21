@@ -10,7 +10,7 @@ public class Elfe extends Character {
     }
 
     @Override
-    public char mapRepresentation() {
-        return 'E';
+    public String mapRepresentation() {
+        return "Ef";
     }
 }

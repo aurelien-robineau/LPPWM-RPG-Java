@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.lpweb.rpg.entities.Entity;
+import com.lpweb.rpg.entities.monster.monsters.Dragon;
+import com.lpweb.rpg.entities.monster.monsters.Gnome;
+import com.lpweb.rpg.entities.monster.monsters.WerWolf;
+import com.lpweb.rpg.entities.monster.monsters.Zombie;
 
 public class Map {
     public enum DIRECTION {
@@ -42,7 +46,7 @@ public class Map {
             // Map cells
             for (Entity entity : row) {
                 if (entity != null) {
-                    System.out.print(entity.mapRepresentation() + " ");
+                    System.out.print(entity.mapRepresentation());
                 }
                 else {
                     System.out.print("  ");
@@ -111,7 +115,19 @@ public class Map {
         for (int y = 0; y < size; y++) {
             ArrayList<Entity> row = new ArrayList<>();
             for (int x = 0; x < size; x++) {
-                row.add(null);
+                int random = (int) (Math.random() * 1000);
+                if (random <= 15) {
+                    row.add(new WerWolf());
+                }
+                else if (15 < random && random <= 40) {
+                    row.add(new Zombie());
+                }
+                else if (40 < random && random <= 100) {
+                    row.add(new Gnome());
+                }
+                else {
+                    row.add(null);
+                }
             }
 
             this.cells.add(row);
@@ -124,24 +140,28 @@ public class Map {
             .set(this.playerPosition.get("x"), this.player);
     }
 
-    public void performAction(String action) throws Exception {
+    public boolean playerWins() {
+        return
+            this.playerPosition.get("y") == 0 &&
+            this.playerPosition.get("x") == this.cells.size() - 1;
+    }
+
+    public boolean performAction(String action) {
         switch (action) {
             case "z":
                 this.movePlayerTo(DIRECTION.TOP);
-                break;
+                return true;
             case "s":
                 this.movePlayerTo(DIRECTION.BOTTOM);
-                break;
+                return true;
             case "q":
                 this.movePlayerTo(DIRECTION.LEFT);
-                break;
+                return true;
             case "d":
                 this.movePlayerTo(DIRECTION.RIGHT);
-                break;
+                return true;
             default:
-                throw new Exception(action + " is not a valid action.");
+                return false;
         }
-
-        this.render();
     }
 }
