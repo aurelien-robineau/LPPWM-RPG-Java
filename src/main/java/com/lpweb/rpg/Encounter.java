@@ -3,12 +3,14 @@ package com.lpweb.rpg;
 import java.util.Scanner;
 
 import com.lpweb.rpg.entities.Entity;
+import com.lpweb.rpg.entities.character.Character;
+import com.lpweb.rpg.weapon.Weapon;
 
 public class Encounter {
-    private Entity player;
+    private Character player;
     private Entity monster;
 
-    public Encounter (Entity player, Entity monster) {
+    public Encounter (Character player, Entity monster) {
         this.player = player;
         this.monster = monster;
     }
@@ -17,7 +19,7 @@ public class Encounter {
         if (this.monster == null) {
             return true;
         }
-        
+
         System.out.println("You encounter a monster. What do you want to do ?");
         this.displayActionList();
 
@@ -47,14 +49,46 @@ public class Encounter {
         System.out.println("|-- FIGHT --|");
         System.out.println("|-----------|");
 
-        while (player.getLifePoints() != 0 && monster.getLifePoints() != 0) {
+        while (player.getLifePoints() > 0 && monster.getLifePoints() > 0) {
+            System.out.println("------------------");
             System.out.println("Player: " + player.getLifePoints() + " lifepoints");
             System.out.println("Monster: " + monster.getLifePoints() + " lifepoints");
+            System.out.println("Attacks:");
+            System.out.println("• 0: Fist - " + player.getDamages() + " damages.");
+            for (int i = 0; i < player.getWeapons().size(); i++) {
+                Weapon weapon = player.getWeapons().get(i);
+                System.out.println("• " + i+1 + ": " + weapon.getName() + " - " + weapon.getDamage() + " damages.");
+            }
 
-            monster.removeLifePoints(10);
+            Scanner scan = new Scanner(System.in);
+            System.out.print("Choose weapon:");
+
+            try {
+                int weaponIndex = Integer.parseInt(scan.nextLine());
+                if (weaponIndex == 0) {
+                    monster.removeLifePoints(player.getDamages());
+                }
+                else {
+                    Weapon selectedWeapon = player.getWeapons().get(weaponIndex - 1);
+                    monster.removeLifePoints(selectedWeapon.getDamage());
+                }
+
+                if (monster.getLifePoints() > 0) {
+                    player.removeLifePoints(monster.getDamages());
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid weapon!");
+            }
         }
 
-        return player.getLifePoints() > 0;
+        if (player.getLifePoints() > 0) {
+            System.out.println("You won the fight!");
+            return true;
+        }
+        else {
+            System.out.println("You lost the fight...");
+            return false;
+        }
     }
 
     private void displayActionList() {

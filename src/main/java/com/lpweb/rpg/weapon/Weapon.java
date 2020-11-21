@@ -27,6 +27,10 @@ public abstract class Weapon
 
     public abstract String ascii_art();
 
+    public String getName() {
+        return this.getClass().getSimpleName();
+    }
+
     @Override
     public String toString() {
         return "Arme de type " + this.getClass().getSimpleName() + " infligeant " + this.damage + " dégâts. Prix: " + this.price + " pièces d'or.\n" + this.ascii_art();

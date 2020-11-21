@@ -2,7 +2,7 @@ package com.lpweb.rpg;
 
 import java.util.Scanner;
 
-import com.lpweb.rpg.entities.Entity;
+import com.lpweb.rpg.entities.character.Character;
 import com.lpweb.rpg.entities.character.characters.Dwarf;
 import com.lpweb.rpg.map.Map;
 
@@ -10,13 +10,13 @@ public class App
 {
     public static void main( String[] args )
     {
-        Entity player = new Dwarf();
+        Character player = new Dwarf();
         Menu menu = Menu.getInstance();
         Map map = new Map(30, player);
         menu.displayWelcome();
         map.render();
         Scanner scan = new Scanner(System.in);
-        while (!map.playerWins()) {
+        while (!map.playerWins() && !map.playerIsDead()) {
             String action = menu.askAction(scan);
 
             if (menu.performAction(action)) {
@@ -31,6 +31,9 @@ public class App
         }
         scan.close();
 
-        menu.displayWin();
+        if (map.playerIsDead())
+            menu.displayLose();
+        else
+            menu.displayWin();
     }
 }

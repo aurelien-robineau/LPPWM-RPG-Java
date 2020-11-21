@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import com.lpweb.rpg.Encounter;
 import com.lpweb.rpg.entities.Entity;
+import com.lpweb.rpg.entities.character.Character;
 import com.lpweb.rpg.entities.monster.monsters.Dragon;
 import com.lpweb.rpg.entities.monster.monsters.Gnome;
 import com.lpweb.rpg.entities.monster.monsters.WerWolf;
@@ -15,13 +16,13 @@ public class Map {
         TOP, RIGHT, BOTTOM, LEFT
     }
 
-    private Entity player;
+    private Character player;
 
     private HashMap<String, Integer> playerPosition = new HashMap<String, Integer>();
 
     private ArrayList<ArrayList<Entity>> cells = new ArrayList<>();
 
-    public Map(int size, Entity player) {
+    public Map(int size, Character player) {
         this.player = player;
 
         // Set initial player position (bottom left)
@@ -132,14 +133,14 @@ public class Map {
         for (int y = 0; y < size; y++) {
             ArrayList<Entity> row = new ArrayList<>();
             for (int x = 0; x < size; x++) {
-                int random = (int) (Math.random() * 1000);
+                int random = (int) (Math.random() * 2000);
                 if (random <= 15) {
                     row.add(new WerWolf());
                 }
-                else if (15 < random && random <= 40) {
+                else if (15 < random && random <= 60) {
                     row.add(new Zombie());
                 }
-                else if (40 < random && random <= 100) {
+                else if (60 < random && random <= 140) {
                     row.add(new Gnome());
                 }
                 else {
@@ -165,6 +166,10 @@ public class Map {
         return
             this.playerPosition.get("y") == 0 &&
             this.playerPosition.get("x") == this.cells.size() - 1;
+    }
+
+    public boolean playerIsDead() {
+        return this.player.getLifePoints() <= 0;
     }
 
     public boolean performAction(String action) {
