@@ -11,21 +11,26 @@ public class App
     public static void main( String[] args )
     {
         Entity player = new Dwarf();
-        Map map = new Map(30, player);
+        Menu menu = Menu.getInstance();
+        Map map = new Map(10, player);
+        menu.displayWelcome();
         map.render();
+        Scanner scan = new Scanner(System.in);
+        while (!map.playerWins()) {
+            String action = menu.askAction(scan);
 
-        while (true) {
-            Scanner scan = new Scanner(System.in);
-            System.out.print("Action (z: haut, s: bas, d: droite, q: gauche): ");
-            String action = scan.nextLine();
-            scan.close();
-
-            try {
-                map.performAction(action);
+            if (menu.performAction(action)) {
+                // Nothing to do
             }
-            catch (Exception e) {
-                System.out.println("Action invalide !");
+            else if (map.performAction(action)) {
+                map.render();
+            }
+            else {
+                System.err.println("Invalid action!");
             }
         }
+        scan.close();
+
+        menu.displayWin();
     }
 }
