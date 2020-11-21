@@ -3,6 +3,7 @@ package com.lpweb.rpg.map;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.lpweb.rpg.Encounter;
 import com.lpweb.rpg.entities.Entity;
 import com.lpweb.rpg.entities.monster.monsters.Dragon;
 import com.lpweb.rpg.entities.monster.monsters.Gnome;
@@ -98,19 +99,28 @@ public class Map {
         }
 
         try {
-            // Add player to new position
-            this.cells
-            .get(this.playerPosition.get("y") + yMove)
-            .set(this.playerPosition.get("x") + xMove, this.player);
+            Entity newCellEntity = this.cells
+                .get(this.playerPosition.get("y") + yMove)
+                .get(this.playerPosition.get("x") + xMove);
 
-            // Remove player from current position
-            this.cells
-            .get(this.playerPosition.get("y"))
-            .set(this.playerPosition.get("x"), null);
+            Encounter encounter = new Encounter(player, newCellEntity);
+            boolean canMove = encounter.enter();
 
-            // Update player position
-            this.playerPosition.put("x", this.playerPosition.get("x") + xMove);
-            this.playerPosition.put("y", this.playerPosition.get("y") + yMove);
+            if (canMove) {
+                // Add player to new position
+                this.cells
+                .get(this.playerPosition.get("y") + yMove)
+                .set(this.playerPosition.get("x") + xMove, this.player);
+
+                // Remove player from current position
+                this.cells
+                .get(this.playerPosition.get("y"))
+                .set(this.playerPosition.get("x"), null);
+
+                // Update player position
+                this.playerPosition.put("x", this.playerPosition.get("x") + xMove);
+                this.playerPosition.put("y", this.playerPosition.get("y") + yMove);
+            }
         }
         catch (IndexOutOfBoundsException e) {
             // If trying to move player outside of the map, do nothing

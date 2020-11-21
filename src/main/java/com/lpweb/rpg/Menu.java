@@ -17,6 +17,7 @@ public class Menu {
         this.displayActionList();
         System.out.println("You can display again this list anytime by typing 'help'.");
         this.waitForEnter("Ready ? Press enter to begin!");
+        System.out.flush();
     }
 
     public void displayHelp() {
