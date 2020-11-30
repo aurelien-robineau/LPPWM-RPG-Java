@@ -1,34 +1,51 @@
 package com.lpweb.rpg;
 
-import java.util.Scanner;
-
 import com.lpweb.rpg.entities.Entity;
-import com.lpweb.rpg.entities.character.Character;
-import com.lpweb.rpg.weapon.Weapon;
+import com.lpweb.rpg.items.weapon.Weapon;
 
+/**
+ * Encounter between the player and a cell entity.
+ */
 public class Encounter {
-    private Character player;
-    private Entity monster;
+    /**
+     * Entity of the cell.
+     */
+    private Entity entity;
 
-    public Encounter (Character player, Entity monster) {
-        this.player = player;
-        this.monster = monster;
+    public Encounter (Entity entity) {
+        this.entity = entity;
     }
 
+    /**
+     * Enter the encounter.
+     * Ask the player what to do.
+     * @return boolean - Can the player move to the cell.
+     */
     public boolean enter() {
-        if (this.monster == null) {
+        // If cell is empty player can move.
+        if (this.entity == null) {
             return true;
         }
+        
+        // If cell is a invicible entity, player can not move.
+        if (entity.isInvincible()) {
+            return false;
+        }
 
-        System.out.println("You encounter a monster. What do you want to do ?");
+        // Otherwise, player must fight.
+        System.out.println("You encounter a " + entity.getName() + ". What do you want to do ?");
+        System.out.println("Your lifepoints: " + ConsoleRPG.getPlayer().getLifePoints());
+        System.out.println(entity.getName() + ": " + entity.getLifePoints() + " lifepoints & " + entity.getDamages() + " damages");
         this.displayActionList();
 
-        Scanner scan = new Scanner(System.in);
-        System.out.print("Action: ");
         boolean isActionValid = true;
-        String action = scan.nextLine();
-
+        
         do {
+            // Ask action while player enters a invald action.
+            System.out.print("Action: ");
+            String action = ConsoleRPG.getScanner().nextLine();
+            isActionValid = true;
+
             switch (action) {
                 case "1":
                     return this.fight();
@@ -40,48 +57,61 @@ public class Encounter {
             }
         } while (!isActionValid);
 
-        scan.close();
         return false;
     }
 
+    /**
+     * Enter the fight.
+     * @return boolean - Did the player win.
+     */
     public boolean fight() {
         System.out.println("|-----------|");
         System.out.println("|-- FIGHT --|");
         System.out.println("|-----------|");
 
-        while (player.getLifePoints() > 0 && monster.getLifePoints() > 0) {
+        // Fight while both player and entity are alive
+        while (ConsoleRPG.getPlayer().getLifePoints() > 0 && entity.getLifePoints() > 0) {
+            // Display round
             System.out.println("------------------");
-            System.out.println("Player: " + player.getLifePoints() + " lifepoints");
-            System.out.println("Monster: " + monster.getLifePoints() + " lifepoints");
+            System.out.println("Player: " + ConsoleRPG.getPlayer().getLifePoints() + "/" + ConsoleRPG.getPlayer().getMaxLifepoints() + " lifepoints");
+            System.out.println(entity.getName() + ": " + entity.getLifePoints() + " lifepoints");
+
+            // Display player's weapons
             System.out.println("Attacks:");
-            System.out.println("• 0: Fist - " + player.getDamages() + " damages.");
-            for (int i = 0; i < player.getWeapons().size(); i++) {
-                Weapon weapon = player.getWeapons().get(i);
-                System.out.println("• " + i+1 + ": " + weapon.getName() + " - " + weapon.getDamage() + " damages.");
+            System.out.println("• 0: Fist - " + ConsoleRPG.getPlayer().getDamages() + " damages.");
+            for (int i = 0; i < ConsoleRPG.getPlayer().getWeapons().size(); i++) {
+                Weapon weapon = ConsoleRPG.getPlayer().getWeapons().get(i);
+                System.out.println("• " + (i+1) + ": " + weapon.getName() + " - " + ConsoleRPG.getPlayer().getDamageWith(weapon) + " damages.");
             }
 
-            Scanner scan = new Scanner(System.in);
-            System.out.print("Choose weapon:");
+            // Ask player wich weapon to use
+            System.out.print("Choose weapon: ");
 
             try {
-                int weaponIndex = Integer.parseInt(scan.nextLine());
-                if (weaponIndex == 0) {
-                    monster.removeLifePoints(player.getDamages());
+                int weaponIndex = Integer.parseInt(ConsoleRPG.getScanner().nextLine()) - 1;
+
+                // If choice is -1, attack with default weapon (fist)
+                if (weaponIndex == -1) {
+                    ConsoleRPG.getPlayer().attack(entity);
                 }
+                // Else use weapon of index weaponIndex
                 else {
-                    Weapon selectedWeapon = player.getWeapons().get(weaponIndex - 1);
-                    monster.removeLifePoints(selectedWeapon.getDamage());
+                    Weapon selectedWeapon = ConsoleRPG.getPlayer().getWeapons().get(weaponIndex);
+                    ConsoleRPG.getPlayer().attack(entity, selectedWeapon);
                 }
 
-                if (monster.getLifePoints() > 0) {
-                    player.removeLifePoints(monster.getDamages());
+                // If entity is still alive, attack player
+                if (entity.getLifePoints() > 0) {
+                    entity.attack(ConsoleRPG.getPlayer());
                 }
             } catch (Exception e) {
                 System.out.println("Invalid weapon!");
             }
         }
 
-        if (player.getLifePoints() > 0) {
+        // Player wins if he is still alive
+        if (ConsoleRPG.getPlayer().getLifePoints() > 0) {
+            ConsoleRPG.getPlayer().addGold(entity.getReward());
             System.out.println("You won the fight!");
             return true;
         }
@@ -91,13 +121,20 @@ public class Encounter {
         }
     }
 
-    private void displayActionList() {
-        System.out.println("• 1: fight");
-        System.out.println("• 2: run away");
-    }
-
+    /**
+     * Cancel the fight. Player will not be able to move to the cell.
+     * @return boolean - Can player move to the cell.
+     */
     private boolean runAway() {
         System.out.println("You runned away.");
         return false;
+    }
+
+    /**
+     * Display the fight availables actions.
+     */
+    private void displayActionList() {
+        System.out.println("• 1: fight");
+        System.out.println("• 2: run away");
     }
 }
